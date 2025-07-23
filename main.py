@@ -18,7 +18,6 @@ def configure():
     load_dotenv()
 
 # Init
-newsapi = NewsApiClient(api_key=os.getenv('my_key'))
 # ! TO GET DATA BASE RUN:
 
 # ! .\venv\Scripts\Activate.ps1
@@ -98,6 +97,7 @@ def login():
 def main_page():
 
     configure()
+    newsapi = NewsApiClient(api_key=os.getenv('my_key')) # ! not sure about this position
 
     username = session.get('username')
     titles = authors = sources = dates = descriptions = thumbnails= information = []
@@ -186,7 +186,7 @@ def main_page():
 def webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/week2proj/mysite/SEO_Project_Final')
-        origin = repo.remotes.oringin
+        origin = repo.remotes.origin
         origin.pull()
         return "Updated PythonAnyWhere successfully", 200
     else:
@@ -195,4 +195,3 @@ def webhook():
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
 
-    
