@@ -73,7 +73,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('home'))  
+        return redirect(url_for('main_page'))  
     return render_template('register.html', title='Register', form=form)
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -88,13 +88,13 @@ def login():
         else:
             session['username']= user.username # ! This is to get the user
             flash(f"Welcome back, {user.username}!", "success")
-            return redirect(url_for("home"))
+            return redirect(url_for("main_page"))
     return render_template("login.html", title="Login", form=form)
 
 
 
-@app.route("/home", methods=["GET", "POST"])
-def home():
+@app.route("/main-page", methods=["GET", "POST"])
+def main_page():
 
     configure()
 
@@ -116,7 +116,6 @@ def home():
         user_query = session['last_query']
     else:
         session.pop('last_query', None)
-
 
 
     if user_query:
@@ -179,7 +178,7 @@ def home():
     
     default_image = url_for('static', filename='images/news-default.webp')
 
-    return render_template("home.html", news_data=news_data, subtitle=subtitle,userName=username,top_titles=top_titles, top_authors=top_authors,top_descriptions=top_descriptions,top_thumbnails=top_thumbnails,default_image=default_image,top_dates=top_dates, current_page=page,total_pages=total_pages, show_latest=show_latest)
+    return render_template("main-page.html", news_data=news_data, subtitle=subtitle,userName=username,top_titles=top_titles, top_authors=top_authors,top_descriptions=top_descriptions,top_thumbnails=top_thumbnails,default_image=default_image,top_dates=top_dates, current_page=page,total_pages=total_pages, show_latest=show_latest)
 
 
 if __name__ == '__main__':
