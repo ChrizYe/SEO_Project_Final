@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, session
 from forms import RegistrationForm, LoginForm
+import git
 from flask_behind_proxy import FlaskBehindProxy
 from flask_sqlalchemy import SQLAlchemy
 
@@ -180,6 +181,16 @@ def main_page():
 
     return render_template("main-page.html", news_data=news_data, subtitle=subtitle,userName=username,top_titles=top_titles, top_authors=top_authors,top_descriptions=top_descriptions,top_thumbnails=top_thumbnails,default_image=default_image,top_dates=top_dates, current_page=page,total_pages=total_pages, show_latest=show_latest)
 
+@app.route("/update_server", methods=["POST"])
 
+def webhook():
+    if request.method == 'POST':
+        repo = git.Repo('/home/week2proj/mysite/SEO_Project_Final')
+        origin = repo.remotes.oringin
+        origin.pull()
+        return "Updated PythonAnyWhere successfully", 200
+    else:
+        return "Wrong event type", 400
+    
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
