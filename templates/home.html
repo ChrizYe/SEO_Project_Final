@@ -1,0 +1,211 @@
+<body>
+  <header class="header">
+    <div class="title-wrapper">
+      <i class="bi bi-globe"></i>
+      <h1 class="title">Your News</h1>
+    </div>
+
+    <div class="user-container">
+      <i class="bi bi-person-circle"></i>
+      <p class="username">{{userName}}</p>
+    </div>
+  </header>
+
+  {% extends "layout.html" %} {% block content %}
+  <h2 class="search">{{ subtitle or "Search for News" }}</h2>
+
+  <form method="POST" class="search-div">
+    <input
+      type="text"
+      name="query"
+      placeholder="Enter a topic..."
+      required
+      class="search-bar"
+      style="font-weight: 300"
+    />
+    <button type="submit" class="search-btn">Search</button>
+  </form>
+
+  {%if show_latest%}
+
+  <div class="top-news-world">
+    <p>Lastest</p>
+  </div>
+
+  {% for titles,dates,authors,descriptions,thumbnails,sources,information in
+  news_data %}
+  <div class="news-container">
+    <div class="news-img-div">
+      <img src="{{thumbnails}}" alt="" />
+    </div>
+
+    <div class="info-container">
+      <div class="news-title-date">
+        <p>{{ titles }}</p>
+        <p>{{ dates }}</p>
+      </div>
+      <p class="descriptions">{{ descriptions }}</p>
+    </div>
+  </div>
+
+  {% endfor %}
+
+  <div class="pagination">
+    {% if current_page > 1 %}
+    <a href="{{request.path }}?page={{current_page - 1}}">Previus</a>
+    {% endif %}
+  </div>
+  <div class="pagination">
+    {% if current_page < 5 %}
+    <a href="{{request.path }}?page={{current_page + 1}}">Next</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="top-news-world">
+    <p>Top News in the World</p>
+  </div>
+  <div class="grid-container">
+    <div class="box" style="grid-area: box-1">
+      <div class="img-bg" id="firstC">
+        <img
+          src="{{ top_thumbnails[0] }}"
+          alt=""
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[0] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[0] }}</p>
+          <p>{{ top_dates[0] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[0] }}</p>
+      </div>
+    </div>
+
+    <div class="box horizontal-dis" style="grid-area: box-2">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[1] }}"
+          alt=""
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[1] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[1] }}</p>
+          <p>{{ top_dates[1] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[1] }}</p>
+      </div>
+    </div>
+
+    <div class="box horizontal-dis" style="grid-area: box-3">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[2] }}"
+          alt=""
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[2] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[2] }}</p>
+          <p>{{ top_dates[2] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[2] }}</p>
+      </div>
+    </div>
+
+    <div class="box" style="grid-area: box-4">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[3] }}"
+          alt=""
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[3] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[3] }}</p>
+          <p>{{ top_dates[3] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[3] }}</p>
+      </div>
+    </div>
+
+    <div class="box" style="grid-area: box-5">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[4] }}"
+          alt=""
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[4] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[4] }}</p>
+          <p>{{ top_dates[4] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[4] }}</p>
+      </div>
+    </div>
+    <div class="box" style="grid-area: box-6">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[5] }}"
+          alt="dsfa"
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[5] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong>{{ top_authors[5] }}</p>
+          <p>{{ top_dates[5] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[5] }}</p>
+      </div>
+    </div>
+
+    <div class="box" style="grid-area: box-7">
+      <div class="img-bg">
+        <img
+          src="{{ top_thumbnails[6] }}"
+          alt="dsfa"
+          onerror="this.onerror=null; this.src='{{default_image }}';"
+        />
+      </div>
+      <div class="top-information-container">
+        <div class="top-title">{{ top_titles[6] }}</div>
+
+        <div class="author-date-container">
+          <p><strong>Author: </strong> {{ top_authors[6] }}</p>
+          <p>{{ top_dates[6] }}</p>
+        </div>
+
+        <p class="top-drescription">{{ top_descriptions[6] }}</p>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
+</body>
