@@ -1,49 +1,42 @@
-from flask import Flask, render_template, url_for, flash, redirect, request, session
-from forms import RegistrationForm, LoginForm
+import os
+from dotenv import load_dotenv
 import git
-from flask_behind_proxy import FlaskBehindProxy
-from flask_sqlalchemy import SQLAlchemy
 
-#Password hashing
+from flask import Flask, render_template, url_for, flash, redirect, request, session
+from flask_sqlalchemy import SQLAlchemy
+from flask_behind_proxy import FlaskBehindProxy
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-# API SECTION
+from forms import RegistrationForm, LoginForm
 from newsapi import NewsApiClient
-from dotenv import load_dotenv
-import os
+
 
 def configure():
     load_dotenv()
 
+
 configure()
 
 
-api_key = os.getenv("my_key")
-if not api_key:
+API_KEY = os.getenv("my_key")
+if not API_KEY:
     raise ValueError("Missing `my_key` in .env file")
-newsapi = NewsApiClient(api_key=api_key)
+
+newsapi = NewsApiClient(api_key=API_KEY)
 
 
-
-
-# Init
-# ! TO GET DATA BASE RUN:
-
-# ! .\venv\Scripts\Activate.ps1
-# ! $env:FLASK_APP = "main.py"
-# ! python -m flask shell
-# ! from (FILE NAME) import User
-# ! User.query.all()
-
-
-
+# Init Flask app and extensions
 app = Flask(__name__)
-proxied = FlaskBehindProxy(app)  # Enables proxy support
+proxied = FlaskBehindProxy(app)  # Enable proxy support
+
 app.config['SECRET_KEY'] = 'd002cde69ced4dfd3544654676af1df8'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
 db = SQLAlchemy(app)
 
+
+# Database structure
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -53,64 +46,68 @@ class User(db.Model):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
+
 with app.app_context():
     db.create_all()
 
 
-
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/register", methods=['GET', 'POST'])
-
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
 
+        # Check for available email registration
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user:
             form.email.errors.append("This email is already registered.")
-            return render_template('register.html', title='Register',form=form)
-
+            return render_template('register.html', title='Register', form=form)
+        
+        # Check for available username registration
         existing_username = User.query.filter_by(username=form.username.data).first()
         if existing_username:
             form.username.errors.append("That username is already taken.")
             return render_template('register.html', title='Register', form=form)
-        
-        #! This is the password hashed
+
+        # Hash password for security
         hashed_password = generate_password_hash(form.password.data)
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 
-        session['username']= user.username # ! This is to get the user
+        # Get user's username for later
+        session['username'] = user.username
 
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('main_page'))  
+        return redirect(url_for('main_page'))
+
     return render_template('register.html', title='Register', form=form)
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+
+        # Check if user exists and password is correct
         if not user:
             flash("No account found with that email.", "email")
         elif not check_password_hash(user.password, form.password.data):
             flash("Incorrect password.", "password")
         else:
-            session['username']= user.username # ! This is to get the user
+            session['username'] = user.username  # Store username in session
             flash(f"Welcome back, {user.username}!", "success")
             return redirect(url_for("main_page"))
     return render_template("login.html", title="Login", form=form)
 
 
-
 @app.route("/main-page", methods=["GET", "POST"])
 def main_page():
-
-
+    # Main Page Set-Up
     username = session.get('username')
-    titles = authors = sources = dates = descriptions = thumbnails= information = []
+    titles = authors = sources = dates = descriptions = thumbnails = information = []
 
-    page = int(request.args.get('page',1))
+    page = int(request.args.get('page', 1))
     page_size = 10
     total_pages = 5
     news_data = []
@@ -126,17 +123,30 @@ def main_page():
     else:
         session.pop('last_query', None)
 
-
+    # Latest 50 News from User's Search Section
     if user_query:
-
+        subtitle = f"Results for '{user_query}'"
         show_latest = True
 
-        all_articles = newsapi.get_everything(q=user_query, language='en',sort_by="relevancy",page_size=100)
+        # Filters 100 articles checking they have all the necessary info
+        all_articles = newsapi.get_everything(
+            q=user_query,
+            language='en',
+            sort_by="relevancy",
+            page_size=100
+        )
 
-        valid_all_articles=[article for article in all_articles['articles'] if article.get('title') and article.get('author') and article.get('url') and article.get('publishedAt') and article.get('content') and article.get('description') and article.get('urlToImage')]
-        
+        valid_all_articles = [
+            article for article in all_articles['articles']
+            if article.get('title') and article.get('author') and article.get('url') and
+            article.get('publishedAt') and article.get('content') and article.get('description') and
+            article.get('urlToImage')
+        ]
+
+        # Take the first 50 articles
         valid_all_articles = valid_all_articles[:50]
 
+        # Get the information from each article
         titles = [article['title'].split('-')[0].strip() for article in valid_all_articles]
         dates = [article['publishedAt'][:10] for article in valid_all_articles]
         authors = [article['author'] for article in valid_all_articles]
@@ -145,7 +155,7 @@ def main_page():
         sources = [article['url'] for article in valid_all_articles]
         information = [article['content'] for article in valid_all_articles]
 
-
+        # Calculate the start and end of news' info for display box
         start = (page - 1) * page_size
         end = start + page_size
 
@@ -157,19 +167,11 @@ def main_page():
         sources = sources[start:end]
         information = information[start:end]
 
-        news_data = zip(titles,dates,authors,descriptions,thumbnails,sources,information)
-
-        subtitle = f"Results for '{user_query}'"
+        news_data = zip(titles, dates, authors, descriptions, thumbnails, sources, information)
     else:
         subtitle = None
 
-
-    # ! THIS IS FOR THE BENTO GRID NEWS
-    top_titles = []
-    top_authors = []
-    top_descriptions = []
-    top_thumbnails = []
-
+    # Top News in the World Section
     top_all_articles = newsapi.get_top_headlines(language='en', page_size=30)
 
     valid_articles = [
@@ -184,13 +186,31 @@ def main_page():
     top_authors = [article['author'] for article in valid_articles]
     top_descriptions = [article['description'] for article in valid_articles]
     top_thumbnails = [article['urlToImage'] for article in valid_articles]
-    
+    top_sources = [article['url'] for article in valid_articles]
+    top_information = [article['content'] for article in valid_articles]
+
+    top_news_data = list(zip(top_titles, top_dates, top_authors, top_descriptions, top_thumbnails, top_sources, top_information))
+
+    # In case there is no image available
     default_image = url_for('static', filename='images/news-default.webp')
 
-    return render_template("main-page.html", news_data=news_data, subtitle=subtitle,userName=username,top_titles=top_titles, top_authors=top_authors,top_descriptions=top_descriptions,top_thumbnails=top_thumbnails,default_image=default_image,top_dates=top_dates, current_page=page,total_pages=total_pages, show_latest=show_latest)
+    return render_template(
+        "main-page.html",
+        news_data=news_data,
+        subtitle=subtitle,
+        userName=username,
+        top_news_data=top_news_data,
+        default_image=default_image,
+        top_dates=top_dates,
+        current_page=page,
+        total_pages=total_pages,
+        show_latest=show_latest
+    )
+
 
 @app.route("/update_server", methods=["POST"])
 def webhook():
+    # Auto update server in PythonAnywhere from the original GitHub repository
     if request.method == 'POST':
         repo = git.Repo('/home/week2proj/mysite/SEO_Project_Final')
         origin = repo.remotes.origin
@@ -198,8 +218,7 @@ def webhook():
         return "Updated PythonAnyWhere successfully", 200
     else:
         return "Wrong event type", 400
-    
-    
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
-
