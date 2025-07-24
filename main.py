@@ -4,7 +4,6 @@ import git
 from flask_behind_proxy import FlaskBehindProxy
 from flask_sqlalchemy import SQLAlchemy
 
-
 #Password hashing
 from werkzeug.security import generate_password_hash, check_password_hash
 
