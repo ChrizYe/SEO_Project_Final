@@ -1,5 +1,5 @@
 body {
-  font-family: "Lora", serif;
+  font-family: "Jost", sans-serif;
 }
 
 .form-og-container {
@@ -55,12 +55,12 @@ body {
   background-color: rgb(33, 117, 210);
   border: none;
   color: white;
-  font-family: "Lora", serif;
+  font-family: "Jost", sans-serif;
   margin-top: 40px;
   height: 54px;
   font-size: 1.2rem;
   font-weight: bold;
-  width: 192px; 
+  width: 192px;
   transition-duration: 0.4s;
   padding: 5px;
 
@@ -75,21 +75,20 @@ body {
   color: rgb(255, 0, 0);
 }
 
-
 /* LOG IN EDIT SECTION */
 
-.form-check{
+.form-check {
   text-align: left;
-  font-family: "Lora", serif;
+  font-family: "Jost", sans-serif;
   color: rgba(0, 0, 0, 0.758);
   margin-top: 40px;
 
-  &:hover{
+  &:hover {
     color: rgb(85, 26, 139);
     text-decoration: underline;
   }
 }
 
-.text-center{
+.text-center {
   text-align: center;
 }
