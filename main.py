@@ -16,6 +16,17 @@ import os
 def configure():
     load_dotenv()
 
+configure()
+
+
+api_key = os.getenv("my_key")
+if not api_key:
+    raise ValueError("Missing `my_key` in .env file")
+newsapi = NewsApiClient(api_key=api_key)
+
+
+
+
 # Init
 # ! TO GET DATA BASE RUN:
 
@@ -95,8 +106,6 @@ def login():
 @app.route("/main-page", methods=["GET", "POST"])
 def main_page():
 
-    configure()
-    newsapi = NewsApiClient(api_key=os.getenv('my_key')) # ! not sure about this position
 
     username = session.get('username')
     titles = authors = sources = dates = descriptions = thumbnails= information = []
@@ -181,7 +190,6 @@ def main_page():
     return render_template("main-page.html", news_data=news_data, subtitle=subtitle,userName=username,top_titles=top_titles, top_authors=top_authors,top_descriptions=top_descriptions,top_thumbnails=top_thumbnails,default_image=default_image,top_dates=top_dates, current_page=page,total_pages=total_pages, show_latest=show_latest)
 
 @app.route("/update_server", methods=["POST"])
-
 def webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/week2proj/mysite/SEO_Project_Final')
