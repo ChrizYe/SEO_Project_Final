@@ -141,6 +141,13 @@ body {
 }
 
 @media (max-width: 900px) {
+  .title {
+    font-size: 2.1;
+  }
+
+  .username {
+    font-size: 1.1;
+  }
   .search-div {
     width: 350px;
   }
