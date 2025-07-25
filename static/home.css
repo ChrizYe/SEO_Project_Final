@@ -14,7 +14,6 @@ body {
   top: 0px;
   left: 0px;
   right: 0px;
-  box-sizing: border-box;
   background-color: #090c75;
   display: flex;
   animation-name: enhance-header2;
@@ -34,8 +33,10 @@ body {
 
 .user-container {
   display: flex;
+  right: 20px;
+  position: absolute;
   align-items: center;
-  padding-right: 20px;
+  align-self: center;
 }
 
 .bi-person-circle {
@@ -117,14 +118,18 @@ body {
 }
 
 .search-div {
+  /* background-color: rebeccapurple; */
+  box-sizing: border-box;
   display: flex;
   margin: 0px auto;
   flex-direction: column;
   width: 800px;
   padding: 10px;
+  align-items: center;
+  justify-items: center;
 }
 
-.top-news-world{
+.top-news-world {
   /* background-color: rebeccapurple; */
   color: #090c75;
   font-size: 4rem;
@@ -144,7 +149,7 @@ body {
 .search-bar {
   width: 100%;
   max-width: 700px;
-  margin: 0px auto;
+  /* margin: 0px auto; */
   display: flex;
   font-family: "Jost", sans-serif;
 
