@@ -1,4 +1,5 @@
 {% extends "layout.html" %} {% block content %}
+<!DOCTYPE html>
 
 <head>
   <link
@@ -37,24 +38,28 @@
   {%if show_latest%}
 
   <div class="top-news-world">
-    <p>Lastest 50</p>
+    <p>Latest 50</p>
   </div>
 
   {% for titles,dates,authors,descriptions,thumbnails,sources,information in
   news_data %}
-  <div class="news-container">
-    <div class="news-img-div">
-      <img src="{{thumbnails}}" alt="" />
-    </div>
-
-    <div class="info-container">
-      <div class="news-title-date">
-        <p>{{ titles }}</p>
-        <p>{{ dates }}</p>
+  <a
+    href="{{ url_for('show_article', index=loop.index0 + ((current_page - 1) * 10)) }}"
+  >
+    <div class="news-container">
+      <div class="news-img-div">
+        <img src="{{thumbnails}}" alt="" />
       </div>
-      <p class="descriptions">{{ descriptions }}</p>
+
+      <div class="info-container">
+        <div class="news-title-date">
+          <p>{{ titles }}</p>
+          <p>{{ dates }}</p>
+        </div>
+        <p class="descriptions">{{ descriptions }}</p>
+      </div>
     </div>
-  </div>
+  </a>
 
   {% endfor %}
 

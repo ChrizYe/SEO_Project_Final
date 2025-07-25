@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block content %}
+
+<!DOCTYPE html>
+<html>
+
+  <body>
+    <h1>{{ article.title }}</h1>
+    <p><strong>Author:</strong> {{ article.author }}</p>
+    <p><strong>Date:</strong> {{ article.publishedAt[:10] }}</p>
+    <img
+      src="{{ article.urlToImage }}"
+      alt="News Image"
+      style="width: 100%; max-height: 400px; object-fit: cover"
+    />
+    <p><strong>Description:</strong> {{ article.description }}</p>
+    <p><strong>Content:</strong> {{ article.content }}</p>
+    <p><a href="{{ article.url }}" target="_blank">Read original</a></p>
+    <p><a href="{{ url_for('main_page') }}">Back to results</a></p>
+  </body>
+</html>
+
+{% endblock content %}

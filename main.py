@@ -17,6 +17,7 @@ def configure():
 
 
 configure()
+saved_latest_articles = []
 
 
 API_KEY = os.getenv("my_key")
@@ -105,7 +106,6 @@ def login():
 def main_page():
     # Main Page Set-Up
     username = session.get('username')
-    titles = authors = sources = dates = descriptions = thumbnails = information = []
 
     page = int(request.args.get('page', 1))
     page_size = 10
@@ -146,28 +146,30 @@ def main_page():
         # Take the first 50 articles
         valid_all_articles = valid_all_articles[:50]
 
-        # Get the information from each article
-        titles = [article['title'].split('-')[0].strip() for article in valid_all_articles]
-        dates = [article['publishedAt'][:10] for article in valid_all_articles]
-        authors = [article['author'] for article in valid_all_articles]
-        descriptions = [article['description'] for article in valid_all_articles]
-        thumbnails = [article['urlToImage'] for article in valid_all_articles]
-        sources = [article['url'] for article in valid_all_articles]
-        information = [article['content'] for article in valid_all_articles]
+        # Save the information of each article
+        global saved_latest_articles
+        saved_latest_articles = valid_all_articles
+
 
         # Calculate the start and end of news' info for display box
         start = (page - 1) * page_size
         end = start + page_size
 
-        titles = titles[start:end]
-        dates = dates[start:end]
-        authors = authors[start:end]
-        descriptions = descriptions[start:end]
-        thumbnails = thumbnails[start:end]
-        sources = sources[start:end]
-        information = information[start:end]
+        articles_to_show = valid_all_articles[start:end]
 
-        news_data = zip(titles, dates, authors, descriptions, thumbnails, sources, information)
+        news_data = [
+            (
+                article['title'].split('-')[0].strip(),
+                article['publishedAt'][:10],
+                article['author'],
+                article['description'],
+                article['urlToImage'],
+                article['url'],
+                article['content']
+
+            )
+            for article in articles_to_show
+        ]
     else:
         subtitle = None
 
@@ -206,6 +208,16 @@ def main_page():
         total_pages=total_pages,
         show_latest=show_latest
     )
+
+
+@app.route("/article/<int:index>")
+def show_article(index):
+    # Load the selected article
+    if index >= len(saved_latest_articles):
+        return "This article has not been found", 404
+
+    article = saved_latest_articles[index]
+    return render_template("article.html", article=article)
 
 
 @app.route("/update_server", methods=["POST"])
