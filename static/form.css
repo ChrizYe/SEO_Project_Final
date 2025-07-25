@@ -47,10 +47,6 @@ body {
   box-sizing: border-box;
 }
 
-.form-control:hover {
-  pointer-events: none;
-}
-
 .submit-btn {
   background-color: rgb(33, 117, 210);
   border: none;
