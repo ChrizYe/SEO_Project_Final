@@ -1,5 +1,6 @@
 body {
   font-family: "Jost", sans-serif;
+  min-width: 500px;
 }
 
 .form-og-container {
@@ -11,7 +12,7 @@ body {
   max-width: 90%;
   width: 600px;
   max-height: 972px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

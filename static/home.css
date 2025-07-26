@@ -141,17 +141,16 @@ body {
 }
 
 @media (max-width: 900px) {
-
   .search-div {
     width: 350px;
   }
 
   @keyframes enhance-header {
-  to {
-    font-size: 1.2rem;
-    color: rgb(0, 0, 0);
+    to {
+      font-size: 1.2rem;
+      color: rgb(0, 0, 0);
+    }
   }
-}
 }
 
 .search-bar {

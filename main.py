@@ -216,7 +216,8 @@ def show_article(index):
         return "This article has not been found", 404
 
     article = saved_latest_articles[index]
-    return render_template("article.html", article=article)
+    username = session.get('username')
+    return render_template("article.html", article=article,userName=username)
 
 
 @app.route("/update_server", methods=["POST"])
