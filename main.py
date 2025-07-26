@@ -189,9 +189,8 @@ def main_page():
     top_descriptions = [article['description'] for article in valid_articles]
     top_thumbnails = [article['urlToImage'] for article in valid_articles]
     top_sources = [article['url'] for article in valid_articles]
-    top_information = [article['content'] for article in valid_articles]
 
-    top_news_data = list(zip(top_titles, top_dates, top_authors, top_descriptions, top_thumbnails, top_sources, top_information))
+    top_news_data = list(zip(top_titles, top_dates, top_authors, top_descriptions, top_thumbnails, top_sources))
 
     # In case there is no image available
     default_image = url_for('static', filename='images/news-default.webp')
