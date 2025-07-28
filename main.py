@@ -21,6 +21,9 @@ configure()
 saved_latest_articles = []
 saved_latest_summaries = ["Empty" for i in range(50)]
 
+saved_top_articles = []
+saved_top_summaries = ["Empty" for i in range(7)]
+
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 if not NEWS_API_KEY:
@@ -189,15 +192,23 @@ def main_page():
     ]
 
     valid_articles = valid_articles[:7]
+    # Save the information of each article
+    global saved_top_articles
+    saved_top_articles = valid_articles
 
-    top_titles = [article['title'].split('-')[0].strip() for article in valid_articles]
-    top_dates = [article['publishedAt'][:10] for article in valid_articles]
-    top_authors = [article['author'] for article in valid_articles]
-    top_descriptions = [article['description'] for article in valid_articles]
-    top_thumbnails = [article['urlToImage'] for article in valid_articles]
-    top_sources = [article['url'] for article in valid_articles]
+    top_news_data = [
+        (
+            article['title'].split('-')[0].strip(),
+            article['publishedAt'][:10],
+            article['author'],
+            article['description'],
+            article['urlToImage'],
+            article['url']
 
-    top_news_data = list(zip(top_titles, top_dates, top_authors, top_descriptions, top_thumbnails, top_sources))
+        )
+        for article in valid_articles
+    ]
+
 
     # In case there is no image available
     default_image = url_for('static', filename='images/news-default.webp')
@@ -209,7 +220,6 @@ def main_page():
         userName=username,
         top_news_data=top_news_data,
         default_image=default_image,
-        top_dates=top_dates,
         current_page=page,
         total_pages=total_pages,
         show_latest=show_latest
@@ -232,6 +242,25 @@ def show_article(index):
         response = model.generate_content("Summarize this article (at least 200 words) " + url)
         summary = response.text
         saved_latest_summaries[index] = summary
+    else:
+        summary = saved_latest_summaries[index]
+    return render_template("article.html", article=article,userName=username,summary=summary)
+
+@app.route("/top-article/<int:index>")
+def show_top_article(index):
+    # Load the selected article
+    if index >= len(saved_top_articles):
+        return "HOLA This article has not been found", 404
+
+    article = saved_top_articles[index]
+    username = session.get('username')
+    # Creates a summary for the selected article
+    url = article['url']
+
+    if saved_top_summaries[index] == "Empty":
+        response = model.generate_content("Summarize this article (at least 200 words) " + url)
+        summary = response.text
+        saved_top_summaries[index] = summary
     else:
         summary = saved_latest_summaries[index]
     return render_template("article.html", article=article,userName=username,summary=summary)

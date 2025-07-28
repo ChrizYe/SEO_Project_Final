@@ -41,8 +41,7 @@
     <p>Latest 50</p>
   </div>
 
-  {% for titles,dates,authors,descriptions,thumbnails,sources in
-  news_data %}
+  {% for titles,dates,authors,descriptions,thumbnails,sources in news_data %}
   <a
     href="{{ url_for('show_article', index=loop.index0 + ((current_page - 1) * 10)) }}"
   >
@@ -83,8 +82,13 @@
   <div class="top-news-world">
     <p>Top News in the World</p>
   </div>
+
   <div class="grid-container">
-    <div class="box" style="grid-area: box-1">
+    <a
+      href="{{ url_for('show_top_article', index=0) }}"
+      class="box"
+      style="grid-area: box-1"
+    >
       <div class="img-bg" id="firstC">
         <img
           src="{{ top_news_data[0][4] }}"
@@ -103,9 +107,13 @@
 
         <p class="top-drescription">{{ top_news_data[0][3] }}</p>
       </div>
-    </div>
+    </a>
 
-    <div class="box horizontal-dis" style="grid-area: box-2">
+    <a
+      href="{{ url_for('show_top_article', index=1) }}"
+      class="box horizontal-dis"
+      style="grid-area: box-2"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[1][4] }}"
@@ -123,9 +131,13 @@
 
         <p class="top-drescription">{{ top_news_data[1][3] }}</p>
       </div>
-    </div>
+    </a>
 
-    <div class="box horizontal-dis" style="grid-area: box-3">
+    <a
+      href="{{ url_for('show_top_article', index=2) }}"
+      class="box horizontal-dis"
+      style="grid-area: box-3"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[2][4] }}"
@@ -143,9 +155,13 @@
 
         <p class="top-drescription">{{ top_news_data[2][3] }}</p>
       </div>
-    </div>
+    </a>
 
-    <div class="box" style="grid-area: box-4">
+    <a
+      href="{{ url_for('show_top_article', index=3) }}"
+      class="box"
+      style="grid-area: box-4"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[3][4] }}"
@@ -163,9 +179,13 @@
 
         <p class="top-drescription">{{ top_news_data[3][3] }}</p>
       </div>
-    </div>
+    </a>
 
-    <div class="box" style="grid-area: box-5">
+    <a
+      href="{{ url_for('show_top_article', index=4) }}"
+      class="box"
+      style="grid-area: box-5"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[4][4] }}"
@@ -183,8 +203,12 @@
 
         <p class="top-drescription">{{ top_news_data[4][3] }}</p>
       </div>
-    </div>
-    <div class="box" style="grid-area: box-6">
+    </a>
+    <a
+      href="{{ url_for('show_top_article', index=5) }}"
+      class="box"
+      style="grid-area: box-6"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[5][4] }}"
@@ -202,9 +226,13 @@
 
         <p class="top-drescription">{{ top_news_data[5][3] }}</p>
       </div>
-    </div>
+    </a>
 
-    <div class="box" style="grid-area: box-7">
+    <a
+      href="{{ url_for('show_top_article', index=7) }}"
+      class="box"
+      style="grid-area: box-7"
+    >
       <div class="img-bg">
         <img
           src="{{ top_news_data[6][4] }}"
@@ -222,7 +250,7 @@
 
         <p class="top-drescription">{{ top_news_data[6][3] }}</p>
       </div>
-    </div>
+    </a>
   </div>
 
   {% endblock %}
