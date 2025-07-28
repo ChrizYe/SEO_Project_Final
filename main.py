@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from forms import RegistrationForm, LoginForm
 from newsapi import NewsApiClient
-from google import genai
+import google.generativeai as genai
 
 
 def configure():
@@ -31,7 +31,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("Missing `GEMINI_API_KEY` in .env file")
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-2.0-flash")  
 
 # Init Flask app and extensions
 app = Flask(__name__)
@@ -224,8 +225,9 @@ def show_article(index):
     username = session.get('username')
 
     url = article['url']
-    response = client.models.generate_content( model="gemini-2.0-flash", contents="Summarize this news article (at least 250 words): " + url)
+    response = model.generate_content("Summarize this article (at least 200 words) " + url)
     summary = response.text
+
     return render_template("article.html", article=article,userName=username,summary=summary)
 
 
