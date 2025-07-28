@@ -41,7 +41,7 @@
     <p>Latest 50</p>
   </div>
 
-  {% for titles,dates,authors,descriptions,thumbnails,sources,information in
+  {% for titles,dates,authors,descriptions,thumbnails,sources in
   news_data %}
   <a
     href="{{ url_for('show_article', index=loop.index0 + ((current_page - 1) * 10)) }}"

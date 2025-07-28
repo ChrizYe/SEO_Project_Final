@@ -13,3 +13,4 @@ pytest
 Werkzeug==2.3.6
 newsapi-python
 python-dotenv
+google-generativeai

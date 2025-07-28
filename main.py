@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from forms import RegistrationForm, LoginForm
 from newsapi import NewsApiClient
+from google import genai
 
 
 def configure():
@@ -20,12 +21,17 @@ configure()
 saved_latest_articles = []
 
 
-API_KEY = os.getenv("my_key")
-if not API_KEY:
-    raise ValueError("Missing `my_key` in .env file")
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+if not NEWS_API_KEY:
+    raise ValueError("Missing `NEWS_API_KEY` in .env file")
 
-newsapi = NewsApiClient(api_key=API_KEY)
+newsapi = NewsApiClient(api_key=NEWS_API_KEY)
 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise ValueError("Missing `GEMINI_API_KEY` in .env file")
+
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # Init Flask app and extensions
 app = Flask(__name__)
@@ -164,8 +170,7 @@ def main_page():
                 article['author'],
                 article['description'],
                 article['urlToImage'],
-                article['url'],
-                article['content']
+                article['url']
 
             )
             for article in articles_to_show
@@ -217,7 +222,11 @@ def show_article(index):
 
     article = saved_latest_articles[index]
     username = session.get('username')
-    return render_template("article.html", article=article,userName=username)
+
+    url = article['url']
+    response = client.models.generate_content( model="gemini-2.0-flash", contents="Summarize this news article (at least 250 words): " + url)
+    summary = response.text
+    return render_template("article.html", article=article,userName=username,summary=summary)
 
 
 @app.route("/update_server", methods=["POST"])
