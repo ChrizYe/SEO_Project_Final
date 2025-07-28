@@ -4,7 +4,6 @@ body {
 
 img {
   width: 100%;
-  /* max-height: 400px; */
   height: 500px;
   object-fit: cover;
   object-position: top;
@@ -14,16 +13,35 @@ img {
   animation-duration: auto;
   animation-fill-mode: both;
   animation-range: 0 200px;
+  margin: 0px;
+  margin-bottom: -6px;
 }
 
-.news-full-info{
-    position: relative;
-    margin: 20px;
-    background-color:aquamarine;
+.news-full-info {
+  position: relative;
+  margin: 0px 20px;
+  background-color: aquamarine;
 }
 
-.tts-button{
-    position: absolute;
-    top: 0px;
-    right: 0px;
+/* .tts-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+} */
+
+.news-header{
+  margin: 0px;
+  padding: 20px 0px;
+  background-color: #f6e4bc;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+
+@media (max-width: 900px) {
+  .news-header{
+    font-size: 0.8rem;
+  }
+  
 }

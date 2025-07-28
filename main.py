@@ -19,6 +19,7 @@ def configure():
 
 configure()
 saved_latest_articles = []
+saved_latest_summaries = ["Empty" for i in range(50)]
 
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
@@ -226,9 +227,13 @@ def show_article(index):
 
     # Creates a summary for the selected article
     url = article['url']
-    response = model.generate_content("Summarize this article (at least 200 words) " + url)
-    summary = response.text
 
+    if saved_latest_summaries[index] == "Empty":
+        response = model.generate_content("Summarize this article (at least 200 words) " + url)
+        summary = response.text
+        saved_latest_summaries[index] = summary
+    else:
+        summary = saved_latest_summaries[index]
     return render_template("article.html", article=article,userName=username,summary=summary)
 
 
