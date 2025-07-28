@@ -225,8 +225,8 @@ def show_article(index):
     username = session.get('username')
 
     url = article['url']
-    # response = model.generate_content("Summarize this article (at least 200 words) " + url)
-    summary = "dfasdf"
+    response = model.generate_content("Summarize this article (at least 200 words) " + url)
+    summary = response.text
 
     return render_template("article.html", article=article,userName=username,summary=summary)
 
