@@ -224,6 +224,7 @@ def show_article(index):
     article = saved_latest_articles[index]
     username = session.get('username')
 
+    # Creates a summary for the selected article
     url = article['url']
     response = model.generate_content("Summarize this article (at least 200 words) " + url)
     summary = response.text
