@@ -24,6 +24,9 @@ saved_latest_summaries = ["Empty" for i in range(50)]
 saved_top_articles = []
 saved_top_summaries = ["Empty" for i in range(7)]
 
+# ! For later, add in database
+user_favorite_articles = []
+
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 if not NEWS_API_KEY:
@@ -250,7 +253,7 @@ def show_article(index):
 def show_top_article(index):
     # Load the selected article
     if index >= len(saved_top_articles):
-        return "HOLA This article has not been found", 404
+        return "This article has not been found", 404
 
     article = saved_top_articles[index]
     username = session.get('username')
@@ -258,11 +261,11 @@ def show_top_article(index):
     url = article['url']
 
     if saved_top_summaries[index] == "Empty":
-        response = model.generate_content("Summarize this article (at least 200 words) " + url)
+        response = model.generate_content("Summarize this article (at least 200 words):" + url)
         summary = response.text
         saved_top_summaries[index] = summary
     else:
-        summary = saved_latest_summaries[index]
+        summary = saved_top_summaries[index]
     return render_template("article.html", article=article,userName=username,summary=summary)
 
 
