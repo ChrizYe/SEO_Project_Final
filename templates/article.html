@@ -8,11 +8,10 @@
         <i class="bi bi-globe"></i>
         <h1 class="title">Your News</h1>
       </div>
-
-      <div class="user-container">
+      <a href="{{url_for('user_page')}}" class="user-container">
         <i class="bi bi-person-circle"></i>
         <p class="username">{{userName}}</p>
-      </div>
+      </a>
     </header>
 
     <img src="{{ article.urlToImage }}" alt="News Image" />
@@ -31,6 +30,26 @@
         🔊 Read Article
       </button>
     </div>
+
+    <form method="POST" action="{{ url_for('add_favorite') }}">
+      <input type="hidden" name="title" value="{{ article.title }}" />
+      <input type="hidden" name="author" value="{{ article.author }}" />
+      <input
+        type="hidden"
+        name="publishedAt"
+        value="{{ article.publishedAt[:10] }}"
+      />
+      <input
+        type="hidden"
+        name="description"
+        value="{{ article.description }}"
+      />
+      <input type="hidden" name="summary" value="{{ summary }}" />
+      <input type="hidden" name="urlToImage" value="{{ article.urlToImage }}" />
+      <input type="hidden" name="url" value="{{ article.url }}" />
+
+      <button type="submit">⭐ Save to Favorites</button>
+    </form>
 
     <script>
       function readArticle() {

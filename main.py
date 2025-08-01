@@ -1,10 +1,14 @@
 import os
 from dotenv import load_dotenv
 import git
+import math
 
 from flask import Flask, render_template, url_for, flash, redirect, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_behind_proxy import FlaskBehindProxy
+from sqlalchemy import Text
+import json
+
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -57,6 +61,8 @@ class User(db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    favorites = db.Column(Text, nullable=False, default="[]")
+
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -86,13 +92,13 @@ def register():
 
         # Hash password for security
         hashed_password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-
-        # Get user's username for later
-        session['username'] = user.username
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password,favorites=json.dumps([]))
 
         db.session.add(user)
         db.session.commit()
+
+        # Get user's username for header
+        session['username'] = user.username
         return redirect(url_for('main_page'))
 
     return render_template('register.html', title='Register', form=form)
@@ -123,7 +129,6 @@ def main_page():
 
     page = int(request.args.get('page', 1))
     page_size = 10
-    total_pages = 5
     news_data = []
 
     show_latest = False
@@ -224,10 +229,8 @@ def main_page():
         top_news_data=top_news_data,
         default_image=default_image,
         current_page=page,
-        total_pages=total_pages,
         show_latest=show_latest
     )
-
 
 @app.route("/article/<int:index>")
 def show_article(index):
@@ -242,7 +245,7 @@ def show_article(index):
     url = article['url']
 
     if saved_latest_summaries[index] == "Empty":
-        response = model.generate_content("Summarize this article (at least 200 words) " + url)
+        response = model.generate_content("Summarize this article (at least 100 words) " + url)
         summary = response.text
         saved_latest_summaries[index] = summary
     else:
@@ -268,6 +271,92 @@ def show_top_article(index):
         summary = saved_top_summaries[index]
     return render_template("article.html", article=article,userName=username,summary=summary)
 
+@app.route("/add-favorite", methods=["POST"])
+def add_favorite():
+    new_favorite = {
+        "title": request.form.get("title"),
+        "publishedAt": request.form.get("publishedAt"),
+        "author": request.form.get("author"),
+        "summary": request.form.get("summary"),
+        "description": request.form.get("description"),
+        "urlToImage": request.form.get("urlToImage"),
+        "url": request.form.get("url")
+    }
+
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))  
+    
+    user = User.query.filter_by(username=username).first()
+
+    favorites = json.loads(user.favorites or "[]")
+
+    if any(fav.get("url") == new_favorite["url"] for fav in favorites):
+        return redirect(request.referrer)
+
+
+    favorites.append(new_favorite)
+    user.favorites = json.dumps(favorites)
+
+    print("New favorite received:", favorites)
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+
+@app.route("/user-page",methods=["GET", "POST"])
+def user_page():
+
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))  
+    
+    user = User.query.filter_by(username=username).first()
+
+    favorites = json.loads(user.favorites or "[]")
+    has_favorites = True
+
+    if not favorites:
+        return render_template("user-page.html",userName=username,articles=[],has_favorites=False)
+    
+
+    print("New favorite received:", favorites)
+
+    def article_dict(arr):
+        return {
+            "title": arr["title"],
+            "publishedAt": arr["publishedAt"],
+            "author": arr["author"],
+            "summary": arr["summary"],
+            "description": arr["description"],
+            "urlToImage": arr["urlToImage"],
+            "url": arr["url"]
+        }
+    articles = [article for article in favorites]
+
+
+    page = int(request.args.get('page', 1))
+    page_size = 4
+    total_pages = math.ceil(len(articles) / page_size)
+
+    # Calculate the start and end of news' info for display box
+    start = (page - 1) * page_size
+    end = start + page_size
+    articles_to_show = articles[start:end]
+
+    return render_template("user-page.html",userName=username,articles=articles_to_show,has_favorites=has_favorites,current_page=page,total_pages=total_pages)
+
+
+@app.route("/favorite-article/<int:index>")
+def show_fav_article(index):
+    username = session.get('username')
+    user = User.query.filter_by(username=username).first()
+    favorites = json.loads(user.favorites or "[]")
+    article = favorites[index]
+
+    print(article['summary'])
+
+    return render_template("article.html", article=article,userName=username,summary=article['summary'])
 
 @app.route("/update_server", methods=["POST"])
 def webhook():

@@ -1,0 +1,65 @@
+{% extends "layout.html" %} {% block content %}
+
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <header class="header">
+      <div class="title-wrapper">
+        <h1 class="title">{{userName}}'s Page</h1>
+      </div>
+      <a href="{{url_for('main_page')}}" class="user-container">
+        <p class="username">Home</p>
+      </a>
+    </header>
+
+    <main class="favorites">
+      <h1>Your Favorites</h1>
+    </main>
+
+    {% if has_favorites %}
+    <div>WORKS!!</div>
+    {% for article in articles %}
+
+    <a
+      href="{{ url_for('show_fav_article', index=loop.index0 + ((current_page - 1) * 4)) }}"
+    >
+      <div class="news-container">
+        <div class="news-img-div">
+          <img src="{{article.urlToImage}}" alt="" />
+        </div>
+
+        <div class="info-container">
+          <div class="news-title-date">
+            <p>{{ article.title }}</p>
+            <p>{{ article.author }}</p>
+          </div>
+          <p class="descriptions">{{ article.description }}</p>
+        </div>
+      </div>
+    </a>
+
+    {% endfor %}
+
+    <div class="pagination">
+      {% if current_page > 1 %}
+      <a
+        class="pagination-option"
+        href="{{request.path }}?page={{current_page - 1}}"
+        >Previus</a
+      >
+      {% endif %} {% if current_page < total_pages %}
+      <a
+        class="pagination-option"
+        href="{{request.path }}?page={{current_page + 1}}"
+        >Next</a
+      >
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div>NUM OF PAGES ------ {{total_pages}}</div>
+  </body>
+</html>
+
+{% endblock content %}
