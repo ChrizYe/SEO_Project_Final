@@ -51,6 +51,12 @@
       <button type="submit">⭐ Save to Favorites</button>
     </form>
 
+    <form method="POST" action="{{ url_for('remove_favorite') }}">
+      <input type="hidden" name="url" value="{{ article.url }}" />
+
+      <button type="submit">❌ Remove from Favorites</button>
+    </form>
+
     <script>
       function readArticle() {
         const title = "{{ article.title }}";

@@ -303,6 +303,25 @@ def add_favorite():
 
     return redirect(request.referrer)
 
+@app.route("/remove-favorite", methods=["POST"])
+def remove_favorite():
+    new_favorite = {
+        "url": request.form.get("url")
+    }
+
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))  
+    
+    user = User.query.filter_by(username=username).first()
+    favorites = json.loads(user.favorites or "[]")
+
+    new_favs = [fav for fav in favorites if fav.get('url') != new_favorite['url']]
+    user.favorites = json.dumps(new_favs)
+    print("New favorite received:", favorites)
+    db.session.commit()
+
+    return redirect(url_for("main_page"))
 
 @app.route("/user-page",methods=["GET", "POST"])
 def user_page():

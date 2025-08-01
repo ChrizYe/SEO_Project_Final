@@ -106,3 +106,9 @@ a {
 
   }
 }
+@media (max-width: 800px) {
+  .news-img-div{
+    display: none;
+  }
+
+}
