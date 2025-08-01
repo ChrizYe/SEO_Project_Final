@@ -355,7 +355,7 @@ def user_page():
 
 
     page = int(request.args.get('page', 1))
-    page_size = 4
+    page_size = 3
     total_pages = math.ceil(len(articles) / page_size)
 
     # Calculate the start and end of news' info for display box
