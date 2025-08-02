@@ -46,6 +46,8 @@
           Read Article
           <i class="bi bi-volume-up"></i>
         </button>
+
+        {% if not favorited %}
         <form method="POST" action="{{ url_for('add_favorite') }}">
           <input type="hidden" name="title" value="{{ article.title }}" />
           <input type="hidden" name="author" value="{{ article.author }}" />
@@ -72,14 +74,15 @@
             <i class="bi bi-star-fill"></i>
           </button>
         </form>
+        {% endif %} {% if favorited %}
 
         <form method="POST" action="{{ url_for('remove_favorite') }}">
           <input type="hidden" name="url" value="{{ article.url }}" />
-
           <button type="submit" class="option">
             Remove Favorite<i class="bi bi-star"></i>
           </button>
         </form>
+        {% endif %}
       </div>
     </div>
 
@@ -95,7 +98,7 @@
       This article was published on: ${date}.
       The author of the aricle is: ${author}.
       The description states that: ${description}.
-      ${description}.
+      The article reads: ${content}.
     `;
 
         const utterance = new SpeechSynthesisUtterance(fullText);

@@ -28,9 +28,6 @@ saved_latest_summaries = ["Empty" for i in range(50)]
 saved_top_articles = []
 saved_top_summaries = ["Empty" for i in range(7)]
 
-# ! For later, add in database
-user_favorite_articles = []
-
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 if not NEWS_API_KEY:
@@ -126,7 +123,10 @@ def login():
 def main_page():
     # Main Page Set-Up
     username = session.get('username')
-
+    if not username:
+        session.clear()  
+        return redirect(url_for('login'))  
+    
     page = int(request.args.get('page', 1))
     page_size = 10
     news_data = []
@@ -241,6 +241,9 @@ def show_article(index):
     article = saved_latest_articles[index]
     username = session.get('username')
 
+    if not username:
+        session.clear()  
+        return redirect(url_for('login'))  
     # Creates a summary for the selected article
     url = article['url']
 
@@ -250,7 +253,7 @@ def show_article(index):
         saved_latest_summaries[index] = summary
     else:
         summary = saved_latest_summaries[index]
-    return render_template("article.html", article=article,userName=username,summary=summary)
+    return render_template("article.html", article=article,userName=username,summary=summary,favorited=False)
 
 @app.route("/top-article/<int:index>")
 def show_top_article(index):
@@ -260,6 +263,10 @@ def show_top_article(index):
 
     article = saved_top_articles[index]
     username = session.get('username')
+
+    if not username:
+        session.clear()  
+        return redirect(url_for('login'))  
     # Creates a summary for the selected article
     url = article['url']
 
@@ -269,7 +276,7 @@ def show_top_article(index):
         saved_top_summaries[index] = summary
     else:
         summary = saved_top_summaries[index]
-    return render_template("article.html", article=article,userName=username,summary=summary)
+    return render_template("article.html", article=article,userName=username,summary=summary,favorited=False)
 
 @app.route("/add-favorite", methods=["POST"])
 def add_favorite():
@@ -285,6 +292,7 @@ def add_favorite():
 
     username = session.get('username')
     if not username:
+        session.clear()  
         return redirect(url_for('login'))  
     
     user = User.query.filter_by(username=username).first()
@@ -311,6 +319,7 @@ def remove_favorite():
 
     username = session.get('username')
     if not username:
+        session.clear()  
         return redirect(url_for('login'))  
     
     user = User.query.filter_by(username=username).first()
@@ -328,6 +337,7 @@ def user_page():
 
     username = session.get('username')
     if not username:
+        session.clear()  
         return redirect(url_for('login'))  
     
     user = User.query.filter_by(username=username).first()
@@ -375,7 +385,14 @@ def show_fav_article(index):
 
     print(article['summary'])
 
-    return render_template("article.html", article=article,userName=username,summary=article['summary'])
+    return render_template("article.html", article=article,userName=username,summary=article['summary'],favorited=True)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()  
+    return redirect(url_for("login"))
+
 
 @app.route("/update_server", methods=["POST"])
 def webhook():
