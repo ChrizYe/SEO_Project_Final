@@ -38,3 +38,4 @@ class LoginForm(FlaskForm):
 #         DataRequired(), EqualTo('new_password', message='Passwords must match')
 #     ])
 #     submit_password = SubmitField('Change Password')
+
