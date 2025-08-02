@@ -12,7 +12,7 @@ import json
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm,UpdateUsernameForm,UpdateEmailForm,ChangePasswordForm
 from newsapi import NewsApiClient
 import google.generativeai as genai
 
@@ -98,7 +98,11 @@ def register():
         session['username'] = user.username
         return redirect(url_for('main_page'))
 
-    return render_template('register.html', title='Register', form=form)
+    return render_template(
+        'register.html',
+        title='Register',
+        form=form
+    )
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -116,7 +120,11 @@ def login():
             session['username'] = user.username  # Store username in session
             flash(f"Welcome back, {user.username}!", "success")
             return redirect(url_for("main_page"))
-    return render_template("login.html", title="Login", form=form)
+    return render_template(
+        "login.html",
+        title="Login",
+        form=form
+    )
 
 
 @app.route("/main-page", methods=["GET", "POST"])
@@ -253,7 +261,13 @@ def show_article(index):
         saved_latest_summaries[index] = summary
     else:
         summary = saved_latest_summaries[index]
-    return render_template("article.html", article=article,userName=username,summary=summary,favorited=False)
+    return render_template(
+        "article.html",
+        article=article,
+        userName=username,
+        summary=summary,
+        favorited=False
+    )
 
 @app.route("/top-article/<int:index>")
 def show_top_article(index):
@@ -276,7 +290,15 @@ def show_top_article(index):
         saved_top_summaries[index] = summary
     else:
         summary = saved_top_summaries[index]
-    return render_template("article.html", article=article,userName=username,summary=summary,favorited=False)
+
+    return render_template(
+        "article.html",
+        article=article,
+        userName=username
+        ,summary=summary,
+        favorited=False
+    )
+
 
 @app.route("/add-favorite", methods=["POST"])
 def add_favorite():
@@ -306,7 +328,6 @@ def add_favorite():
     favorites.append(new_favorite)
     user.favorites = json.dumps(favorites)
 
-    print("New favorite received:", favorites)
     db.session.commit()
 
     return redirect(request.referrer)
@@ -327,7 +348,6 @@ def remove_favorite():
 
     new_favs = [fav for fav in favorites if fav.get('url') != new_favorite['url']]
     user.favorites = json.dumps(new_favs)
-    print("New favorite received:", favorites)
     db.session.commit()
 
     return redirect(url_for("main_page"))
@@ -348,8 +368,6 @@ def user_page():
     if not favorites:
         return render_template("user-page.html",userName=username,articles=[],has_favorites=False)
     
-
-    print("New favorite received:", favorites)
 
     def article_dict(arr):
         return {
@@ -372,8 +390,20 @@ def user_page():
     start = (page - 1) * page_size
     end = start + page_size
     articles_to_show = articles[start:end]
-
-    return render_template("user-page.html",userName=username,articles=articles_to_show,has_favorites=has_favorites,current_page=page,total_pages=total_pages)
+    username_form = UpdateUsernameForm()
+    email_form = UpdateEmailForm()
+    password_form = ChangePasswordForm()
+    return render_template(
+        "user-page.html",
+        userName=username,
+        articles=articles_to_show,
+        has_favorites=has_favorites,
+        current_page=page,
+        total_pages=total_pages,
+        username_form =username_form,
+        email_form=email_form,
+        password_form=password_form
+    )
 
 
 @app.route("/favorite-article/<int:index>")
@@ -383,9 +413,13 @@ def show_fav_article(index):
     favorites = json.loads(user.favorites or "[]")
     article = favorites[index]
 
-    print(article['summary'])
-
-    return render_template("article.html", article=article,userName=username,summary=article['summary'],favorited=True)
+    return render_template(
+        "article.html",
+        article=article,
+        userName=username,
+        summary=article['summary'],
+        favorited=True
+    )
 
 
 @app.route("/logout")

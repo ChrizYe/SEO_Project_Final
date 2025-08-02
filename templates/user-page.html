@@ -21,6 +21,74 @@
 
     <main class="main-container">
       <h1>Account Settings</h1>
+      <!-- <form method="POST" action="">
+        {{ form.hidden_tag() }} {% set flash_messages =
+        get_flashed_messages(with_categories=true) %}
+
+        <fieldset class="form-og-container">
+          <div class="create-acc">
+            <h2>Change your username</h2>
+          </div>
+
+          <div class="form-group">
+            {% if username_form.email.errors %} {{ form.email(class="form-control
+            form-control-lg is-invalid", placeholder="Email") }}
+            <div class="invalid-feedback">
+              {% for error in form.email.errors %}
+              <i class="bi bi-envelope-exclamation"></i>
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.email(class="form-control form-control-lg",
+            placeholder="Email") }} {% for category, message in flash_messages
+            %} {% if category == 'email' %}
+            <div class="invalid-feedback d-block">
+              <span>{{ message }}</span>
+            </div>
+            {% endif %} {% endfor %} {% endif %}
+          </div>
+
+          <div class="form-group">
+            {% if form.password.errors %} {{ form.password(class="form-control
+            form-control-lg is-invalid", placeholder="Password") }}
+            <div class="invalid-feedback">
+              {% for error in form.password.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %} {{ form.password(class="form-control form-control-lg",
+            placeholder="Password") }} {% for category, message in
+            flash_messages %} {% if category == 'password' %}
+            <div class="invalid-feedback d-block">
+              <span>{{ message }}</span>
+            </div>
+            {% endif %} {% endfor %} {% endif %}
+          </div>
+
+          <div class="form-group form-check">
+            {{ form.remember() }}
+            <label class="form-check-label" for="{{ form.remember.id }}">
+              Remember Me
+            </label>
+          </div>
+
+          <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info submit-btn") }}
+          </div>
+
+          <div class="form-group text-center">
+            <p>
+              Or
+              <a
+                href="{{ url_for('register') }}"
+                style="text-decoration: underline; color: #090c75"
+                >create an account</a
+              >
+              if you don’t have one.
+            </p>
+          </div>
+        </fieldset>
+      </form> -->
     </main>
 
     <main class="main-container">
@@ -28,7 +96,6 @@
       <h1>Your Favorites</h1>
 
       {% if has_favorites %} {% for article in articles %}
-
       <a
         href="{{ url_for('show_fav_article', index=loop.index0 + ((current_page - 1) * 3)) }}"
       >
@@ -36,7 +103,6 @@
           <div class="news-img-div">
             <img src="{{article.urlToImage}}" alt="" />
           </div>
-
           <div class="info-container">
             <div class="news-title-date">
               <p>{{ article.title }}</p>
@@ -46,7 +112,6 @@
           </div>
         </div>
       </a>
-
       {% endfor %}
 
       <div class="pagination">
@@ -54,7 +119,7 @@
         <a
           class="pagination-option"
           href="{{request.path }}?page={{current_page - 1}}"
-          >Previus</a
+          >Previous</a
         >
         {% endif %} {% if current_page < total_pages %}
         <a
