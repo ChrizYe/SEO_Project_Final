@@ -1,8 +1,21 @@
-.main-container{
-    /* background-color: beige; */
-    margin: 0px 40px;
+body {
+  height: 4000px;
 }
 
-.userpage{
-    margin-left: 20px;
+.main-container {
+  margin: 40px 40px;
+}
+
+.userpage {
+  margin-left: 20px;
+}
+
+.pagination-option {
+  transition: 0.5s;
+  &:hover {
+    cursor: pointer;
+    background-color: #9c0930 !important;
+    color: white;
+    font-weight: 700;
+  }
 }

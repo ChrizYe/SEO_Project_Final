@@ -80,7 +80,6 @@ img {
     cursor: pointer;
     background-color: #090c75;
     color: white;
-    transform: translate(0%, -10%);
     transform: scale(1.03);
     font-weight: 700;
   }

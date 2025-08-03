@@ -108,6 +108,7 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
 
@@ -362,11 +363,26 @@ def user_page():
     
     user = User.query.filter_by(username=username).first()
 
+    username_form = UpdateUsernameForm()
+    email_form = UpdateEmailForm()
+    password_form = ChangePasswordForm()
+
     favorites = json.loads(user.favorites or "[]")
     has_favorites = True
 
     if not favorites:
-        return render_template("user-page.html",userName=username,articles=[],has_favorites=False)
+        return render_template(
+        "user-page.html",
+            userName=username,
+            articles=[],
+            has_favorites=False,
+            current_page=1,
+            total_pages=1,
+            username_form=username_form,
+            email_form=email_form,
+            password_form=password_form
+        )
+
     
 
     def article_dict(arr):
@@ -390,9 +406,47 @@ def user_page():
     start = (page - 1) * page_size
     end = start + page_size
     articles_to_show = articles[start:end]
-    username_form = UpdateUsernameForm()
-    email_form = UpdateEmailForm()
-    password_form = ChangePasswordForm()
+
+
+    if username_form.submit_username.data and username_form.validate_on_submit():
+        if check_password_hash(user.password, username_form.current_password.data):
+            existing_user = User.query.filter_by(username=username_form.username.data).first()
+            if existing_user and existing_user != user:
+                username_form.errors.append("This username is already taken.")
+            else:
+                user.username = username_form.username.data
+                db.session.commit()
+                session["username"] = user.username  
+                return redirect(url_for("user_page"))
+        else:
+            username_form.errors.append("Incorrect password")
+
+    if email_form.submit_email.data and email_form.validate_on_submit():
+        if check_password_hash(user.password, email_form.current_password.data):
+            existing_email = User.query.filter_by(email=email_form.email.data).first()
+            if existing_email and existing_email != user:
+                email_form.errors.append("This email is already taken.")
+            else:
+                user.email = email_form.email.data
+                db.session.commit()
+                email_form.errors.append("This email is already taken.")
+                flash("Email updated successfully.", "success")
+                return redirect(url_for("user_page"))
+        else:
+            flash("Incorrect password for email update.", "danger")
+            username_form.errors.append("Incorrect password.")
+
+    if password_form.submit_password.data and password_form.validate_on_submit():
+        if check_password_hash(user.password, password_form.current_password.data):
+            user.password = generate_password_hash(password_form.new_password.data)
+            db.session.commit()
+            flash("Password changed successfully.", "success")
+            return redirect(url_for("user_page"))
+        else:
+            username_form.errors.append("Incorrect current password.")
+
+
+
     return render_template(
         "user-page.html",
         userName=username,
@@ -400,10 +454,11 @@ def user_page():
         has_favorites=has_favorites,
         current_page=page,
         total_pages=total_pages,
-        username_form =username_form,
+        username_form=username_form,
         email_form=email_form,
         password_form=password_form
     )
+
 
 
 @app.route("/favorite-article/<int:index>")

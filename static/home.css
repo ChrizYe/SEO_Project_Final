@@ -2,7 +2,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-width: 500px;
+  min-width: 450px;
 }
 
 body {
@@ -141,6 +141,10 @@ body {
 }
 
 @media (max-width: 900px) {
+  .title {
+    font-size: 1.9rem;
+  }
+
   .search-div {
     width: 350px;
   }
