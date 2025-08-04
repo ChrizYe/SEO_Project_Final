@@ -29,8 +29,8 @@
             {{ username_form.hidden_tag() }}
 
             <!-- Username  -->
-            {{ username_form.username(class="settings-input", placeholder="New
-            Username") }} {% for error in username_form.username.errors %}
+            {{ username_form.username(class="settings-input", placeholder="New Username") }}
+            {% for error in username_form.username.errors %}
             <div class="error">{{ error }}</div>
             {% endfor %} {% with messages =
             get_flashed_messages(with_categories=true) %} {% for category,
