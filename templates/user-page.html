@@ -29,7 +29,7 @@
             {{ username_form.hidden_tag() }}
 
             <!-- Username  -->
-            {{ username_form.username(class="settings-input", placeholder="New Username") }}
+            {{ username_form.username(class="settings-input", placeholder="New Username") }} 
             {% for error in username_form.username.errors %}
             <div class="error">{{ error }}</div>
             {% endfor %} {% with messages =
@@ -163,6 +163,8 @@
         >
         {% endif %}
       </div>
+      {% endif %} {% if not has_favorites %}
+      <h3 style="margin-left: 20px; font-weight: 300;">You dont have any favorites yet</h3>
       {% endif %}
     </main>
   </body>
