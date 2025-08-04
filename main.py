@@ -119,7 +119,6 @@ def login():
             flash("Incorrect password.", "password")
         else:
             session['username'] = user.username  # Store username in session
-            flash(f"Welcome back, {user.username}!", "success")
             return redirect(url_for("main_page"))
     return render_template(
         "login.html",
@@ -412,39 +411,37 @@ def user_page():
         if check_password_hash(user.password, username_form.current_password.data):
             existing_user = User.query.filter_by(username=username_form.username.data).first()
             if existing_user and existing_user != user:
-                username_form.errors.append("This username is already taken.")
+                flash("This username is already taken.", "username")
             else:
                 user.username = username_form.username.data
                 db.session.commit()
                 session["username"] = user.username  
+                flash("Username updated successfully.", "success")
                 return redirect(url_for("user_page"))
         else:
-            username_form.errors.append("Incorrect password")
+            flash("Incorrect password for username update.", "username_password")
 
     if email_form.submit_email.data and email_form.validate_on_submit():
         if check_password_hash(user.password, email_form.current_password.data):
             existing_email = User.query.filter_by(email=email_form.email.data).first()
             if existing_email and existing_email != user:
-                email_form.errors.append("This email is already taken.")
+                flash("This email is already taken.", "email")
             else:
                 user.email = email_form.email.data
                 db.session.commit()
-                email_form.errors.append("This email is already taken.")
                 flash("Email updated successfully.", "success")
                 return redirect(url_for("user_page"))
         else:
-            flash("Incorrect password for email update.", "danger")
-            username_form.errors.append("Incorrect password.")
+            flash("Incorrect password for email update.", "email_password")
 
     if password_form.submit_password.data and password_form.validate_on_submit():
         if check_password_hash(user.password, password_form.current_password.data):
             user.password = generate_password_hash(password_form.new_password.data)
             db.session.commit()
-            flash("Password changed successfully.", "success")
+            flash("Password changed successfully.", "password-success")
             return redirect(url_for("user_page"))
         else:
-            username_form.errors.append("Incorrect current password.")
-
+            flash("Incorrect current password for password update.", "password_current")
 
 
     return render_template(

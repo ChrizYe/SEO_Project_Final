@@ -21,86 +21,112 @@
 
     <main class="main-container">
       <h1>Account Settings</h1>
-      <!-- Flash Messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div class="alert alert-{{ category }}">{{ message }}</div>
-      {% endfor %} {% endif %} {% endwith %}
 
-      <!-- Update Username -->
-      <h2>Update Username</h2>
-      <form method="POST" action="{{ url_for('user_page') }}">
-        {{ username_form.hidden_tag() }}
+      <div class="change-info-container">
+        <div class="change-option">
+          <h2 class="settings-option">Update Username</h2>
+          <form method="POST" action="{{ url_for('user_page') }}">
+            {{ username_form.hidden_tag() }}
 
-        <label for="{{ username_form.username.id }}">New Username</label>
-        {{ username_form.username() }} {% for error in
-        username_form.username.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %}
+            <!-- Username  -->
+            {{ username_form.username(class="settings-input", placeholder="New
+            Username") }} {% for error in username_form.username.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {% with messages =
+            get_flashed_messages(with_categories=true) %} {% for category,
+            message in messages %} {% if category == 'username' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %}
 
-        <label for="{{ username_form.current_password.id }}"
-          >Current Password</label
-        >
-        {{ username_form.current_password() }} {% for error in
-        username_form.current_password.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %} {{ username_form.submit_username() }}
-      </form>
+            <!-- Current Password  -->
+            {{ username_form.current_password(class="settings-input",
+            placeholder="Current Password") }} {% for error in
+            username_form.current_password.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {% with messages =
+            get_flashed_messages(with_categories=true) %} {% for category,
+            message in messages %} {% if category == 'username_password' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %} {{
+            username_form.submit_username(class="submit-btn") }}
+          </form>
+        </div>
 
-      <hr />
+        <div class="change-option">
+          <!-- Update Email -->
+          <h2 class="settings-option">Update Email</h2>
+          <form method="POST" action="{{ url_for('user_page') }}">
+            {{ email_form.hidden_tag() }}
 
-      <!-- Update Email -->
-      <h2>Update Email</h2>
-      <form method="POST" action="{{ url_for('user_page') }}">
-        {{ email_form.hidden_tag() }}
+            <!-- Email  -->
+            {{ email_form.email(class="settings-input", placeholder="New Email")
+            }} {% for error in email_form.email.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {% with messages =
+            get_flashed_messages(with_categories=true) %} {% for category,
+            message in messages %} {% if category == 'email' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %}
 
-        <label for="{{ email_form.email.id }}">New Email</label>
-        {{ email_form.email() }} {% for error in email_form.email.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %}
+            <!-- Current Password  -->
+            {{ email_form.current_password(class="settings-input",
+            placeholder="Current Password") }} {% for error in
+            email_form.current_password.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {% with messages =
+            get_flashed_messages(with_categories=true) %} {% for category,
+            message in messages %} {% if category == 'email_password' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %} {{
+            email_form.submit_email(class="submit-btn") }}
+          </form>
+        </div>
 
-        <label for="{{ email_form.current_password.id }}"
-          >Current Password</label
-        >
-        {{ email_form.current_password() }} {% for error in
-        email_form.current_password.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %} {{ email_form.submit_email() }}
-      </form>
+        <div class="change-option">
+          <!-- Change Password -->
+          <h2 class="settings-option">Change Password</h2>
+          <form method="POST" action="{{ url_for('user_page') }}">
+            {{ password_form.hidden_tag() }}
 
-      <hr />
+            <!-- Current Password  -->
+            {{ password_form.current_password(class="settings-input",
+            placeholder="Current Password") }} {% for error in
+            password_form.current_password.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {% with messages =
+            get_flashed_messages(with_categories=true) %} {% for category,
+            message in messages %} {% if category == 'password_current' %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %}
 
-      <!-- Change Password -->
-      <h2>Change Password</h2>
-      <form method="POST" action="{{ url_for('user_page') }}">
-        {{ password_form.hidden_tag() }}
+            <!-- New Password  -->
+            {{ password_form.new_password(class="settings-input",
+            placeholder="New Password") }} {% for error in
+            password_form.new_password.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %}
 
-        <label for="{{ password_form.current_password.id }}"
-          >Current Password</label
-        >
-        {{ password_form.current_password() }} {% for error in
-        password_form.current_password.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %}
-
-        <label for="{{ password_form.new_password.id }}">New Password</label>
-        {{ password_form.new_password() }} {% for error in
-        password_form.new_password.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %}
-
-        <label for="{{ password_form.confirm_new_password.id }}"
-          >Confirm New Password</label
-        >
-        {{ password_form.confirm_new_password() }} {% for error in
-        password_form.confirm_new_password.errors %}
-        <div class="error">{{ error }}</div>
-        {% endfor %} {{ password_form.submit_password() }}
-      </form>
+            <!-- Confirm New Password  -->
+            {{ password_form.confirm_new_password(class="settings-input",
+            placeholder="Confirm New Password") }} {% for error in
+            password_form.confirm_new_password.errors %}
+            <div class="error">{{ error }}</div>
+            {% endfor %} {{ password_form.submit_password(class="submit-btn") }}
+            {% with messages = get_flashed_messages(with_categories=true) %} {%
+            for category, message in messages %} {% if category
+            =='password_success' %}
+            <div class="alert alert-success">{{ message }}</div>
+            {% endif %} {% endfor %} {% endwith %}
+          </form>
+        </div>
+      </div>
     </main>
 
     <main class="main-container">
-      <a class="pagination-option" href="{{ url_for('logout') }}">Log out</a>
+      <h1>Log Out</h1>
+      <a class="option logout" href="{{ url_for('logout') }}">
+        <span class="bi bi-door-closed"></span>Exit</a
+      >
       <h1>Your Favorites</h1>
 
       {% if has_favorites %} {% for article in articles %}
@@ -139,8 +165,6 @@
       </div>
       {% endif %}
     </main>
-
-    <div>NUM OF PAGES ------ {{total_pages}}</div>
   </body>
 </html>
 
