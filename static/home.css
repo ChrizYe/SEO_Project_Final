@@ -23,6 +23,16 @@ body {
   z-index: 100;
 }
 
+@media (max-width: 460px) {
+  .bi-globe,
+  .title {
+    font-size: 1.5rem !important;
+  }
+  .user-container {
+    right: 0px !important;
+  }
+}
+
 .title-wrapper {
   display: flex;
   margin: 0px auto;

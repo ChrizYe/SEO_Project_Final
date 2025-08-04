@@ -1,4 +1,3 @@
-
 img {
   width: 100%;
   max-height: 600px;
@@ -35,15 +34,25 @@ img {
 
 .news-header {
   margin: 0px;
-  padding: 20px 0px;
+  padding: 20px 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   align-items: center;
   justify-content: center;
 }
 
+.article-text {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 460px) {
+  .article-text {
+    font-size: 0.9rem !important;
+  }
+}
+
 .menu {
-  margin-top: -30px;
+  margin: -30px 0px 30px;
   padding: 0px 20px;
   display: flex;
   flex-direction: column;
