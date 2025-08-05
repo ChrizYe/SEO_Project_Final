@@ -352,26 +352,24 @@ def remove_favorite():
 
     return redirect(url_for("main_page"))
 
-@app.route("/user-page",methods=["GET", "POST"])
+@app.route("/user-page", methods=["GET"])
 def user_page():
-
     username = session.get('username')
     if not username:
-        session.clear()  
-        return redirect(url_for('login'))  
+        session.clear()
+        return redirect(url_for('login'))
     
     user = User.query.filter_by(username=username).first()
-
     username_form = UpdateUsernameForm()
     email_form = UpdateEmailForm()
     password_form = ChangePasswordForm()
 
     favorites = json.loads(user.favorites or "[]")
-    has_favorites = True
+    has_favorites = bool(favorites)
 
-    if not favorites:
+    if not has_favorites:
         return render_template(
-        "user-page.html",
+            "user-page.html",
             userName=username,
             articles=[],
             has_favorites=False,
@@ -382,67 +380,15 @@ def user_page():
             password_form=password_form
         )
 
-    
-
-    def article_dict(arr):
-        return {
-            "title": arr["title"],
-            "publishedAt": arr["publishedAt"],
-            "author": arr["author"],
-            "summary": arr["summary"],
-            "description": arr["description"],
-            "urlToImage": arr["urlToImage"],
-            "url": arr["url"]
-        }
-    articles = [article for article in favorites]
-
+    articles = favorites
 
     page = int(request.args.get('page', 1))
     page_size = 3
     total_pages = math.ceil(len(articles) / page_size)
 
-    # Calculate the start and end of news' info for display box
     start = (page - 1) * page_size
     end = start + page_size
     articles_to_show = articles[start:end]
-
-
-    if username_form.submit_username.data and username_form.validate_on_submit():
-        if check_password_hash(user.password, username_form.current_password.data):
-            existing_user = User.query.filter_by(username=username_form.username.data).first()
-            if existing_user and existing_user != user:
-                flash("This username is already taken.", "username")
-            else:
-                user.username = username_form.username.data
-                db.session.commit()
-                session["username"] = user.username  
-                flash("Username updated successfully.", "success")
-                return redirect(url_for("user_page"))
-        else:
-            flash("Incorrect password for username update.", "username_password")
-
-    if email_form.submit_email.data and email_form.validate_on_submit():
-        if check_password_hash(user.password, email_form.current_password.data):
-            existing_email = User.query.filter_by(email=email_form.email.data).first()
-            if existing_email and existing_email != user:
-                flash("This email is already taken.", "email")
-            else:
-                user.email = email_form.email.data
-                db.session.commit()
-                flash("Email updated successfully.", "success")
-                return redirect(url_for("user_page"))
-        else:
-            flash("Incorrect password for email update.", "email_password")
-
-    if password_form.submit_password.data and password_form.validate_on_submit():
-        if check_password_hash(user.password, password_form.current_password.data):
-            user.password = generate_password_hash(password_form.new_password.data)
-            db.session.commit()
-            flash("Password changed successfully.", "password-success")
-            return redirect(url_for("user_page"))
-        else:
-            flash("Incorrect current password for password update.", "password_current")
-
 
     return render_template(
         "user-page.html",
@@ -456,6 +402,83 @@ def user_page():
         password_form=password_form
     )
 
+
+@app.route("/update-username", methods=["POST"])
+def update_username():
+    username_form = UpdateUsernameForm()
+    if username_form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if not user:
+            session.clear()
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user.password, username_form.current_password.data):
+            flash("Incorrect password for username update.", "username_password")
+        else:
+            existing_user = User.query.filter_by(username=username_form.username.data).first()
+            if existing_user and existing_user != user:
+                flash("This username is already taken.", "username")
+            else:
+                user.username = username_form.username.data
+                db.session.commit()
+                session["username"] = user.username
+                flash("Username updated successfully.", "username_success")
+    else:
+        for field, errors in username_form.errors.items():
+            for error in errors:
+                flash(error, "username")
+
+    return redirect(url_for("user_page"))
+
+
+@app.route("/update-email", methods=["POST"])
+def update_email():
+    email_form = UpdateEmailForm()
+    if email_form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if not user:
+            session.clear()
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user.password, email_form.current_password.data):
+            flash("Incorrect password for email update.", "email_password")
+        else:
+            existing_email = User.query.filter_by(email=email_form.email.data).first()
+            if existing_email and existing_email != user:
+                flash("This email is already taken.", "email")
+            else:
+                user.email = email_form.email.data
+                db.session.commit()
+                flash("Email updated successfully.", "email_success")
+    else:
+        for field, errors in email_form.errors.items():
+            for error in errors:
+                flash(error, "email")
+
+    return redirect(url_for("user_page"))
+
+
+@app.route("/change-password", methods=["POST"])
+def change_password():
+    password_form = ChangePasswordForm()
+    if password_form.validate_on_submit():
+        user = User.query.filter_by(username=session.get('username')).first()
+        if not user:
+            session.clear()
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user.password, password_form.current_password.data):
+            flash("Incorrect current password for password update.", "password_current")
+        else:
+            user.password = generate_password_hash(password_form.new_password.data)
+            db.session.commit()
+            flash("Password changed successfully.", "password_success")
+    else:
+        for field, errors in password_form.errors.items():
+            for error in errors:
+                flash(error, "password")
+
+    return redirect(url_for("user_page"))
 
 
 @app.route("/favorite-article/<int:index>")

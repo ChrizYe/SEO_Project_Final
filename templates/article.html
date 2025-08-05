@@ -43,8 +43,11 @@
           ></a>
         </p>
         <button onclick="readArticle()" class="tts-button option">
-          Read Article
-          <i class="bi bi-volume-up"></i>
+          Read Article <i class="bi bi-volume-up"></i>
+        </button>
+
+        <button onclick="stopReading()" class="tts-button option">
+          Stop Reading <i class="bi bi-volume-mute"></i>
         </button>
 
         {% if not favorited %}
@@ -89,14 +92,14 @@
     <script>
       function readArticle() {
         const title = "{{ article.title }}";
-        const date = " {{ article.publishedAt[:10]}}";
+        const date = "{{ article.publishedAt[:10] }}";
         const author = "{{ article.author }}";
-        const description = "{{ article.description}}";
+        const description = "{{ article.description }}";
         const content = `{{ summary }}`;
         const fullText = `
       The title of the article is: ${title}.
       This article was published on: ${date}.
-      The author of the aricle is: ${author}.
+      The author of the article is: ${author}.
       The description states that: ${description}.
       The article reads: ${content}.
     `;
@@ -104,6 +107,10 @@
         const utterance = new SpeechSynthesisUtterance(fullText);
         utterance.lang = "en-US";
         speechSynthesis.speak(utterance);
+      }
+
+      function stopReading() {
+        speechSynthesis.cancel();
       }
     </script>
   </body>

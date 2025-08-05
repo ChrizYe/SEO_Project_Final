@@ -25,11 +25,11 @@
       <div class="change-info-container">
         <div class="change-option">
           <h2 class="settings-option">Update Username</h2>
-          <form method="POST" action="{{ url_for('user_page') }}">
+          <form method="POST" action="{{ url_for('update_username') }}">
             {{ username_form.hidden_tag() }}
 
             <!-- Username  -->
-            {{ username_form.username(class="settings-input", placeholder="New Username") }} 
+            {{ username_form.username(class="settings-input", placeholder="New Username") }}
             {% for error in username_form.username.errors %}
             <div class="error">{{ error }}</div>
             {% endfor %} {% with messages =
@@ -55,7 +55,7 @@
         <div class="change-option">
           <!-- Update Email -->
           <h2 class="settings-option">Update Email</h2>
-          <form method="POST" action="{{ url_for('user_page') }}">
+          <form method="POST" action="{{ url_for('update_email') }}">
             {{ email_form.hidden_tag() }}
 
             <!-- Email  -->
@@ -85,7 +85,7 @@
         <div class="change-option">
           <!-- Change Password -->
           <h2 class="settings-option">Change Password</h2>
-          <form method="POST" action="{{ url_for('user_page') }}">
+          <form method="POST" action="{{ url_for('change_password') }}">
             {{ password_form.hidden_tag() }}
 
             <!-- Current Password  -->
@@ -113,8 +113,8 @@
             <div class="error">{{ error }}</div>
             {% endfor %} {{ password_form.submit_password(class="submit-btn") }}
             {% with messages = get_flashed_messages(with_categories=true) %} {%
-            for category, message in messages %} {% if category
-            =='password_success' %}
+            for category, message in messages %} {% if
+            category=='password_success' %}
             <div class="alert alert-success">{{ message }}</div>
             {% endif %} {% endfor %} {% endwith %}
           </form>
@@ -164,7 +164,9 @@
         {% endif %}
       </div>
       {% endif %} {% if not has_favorites %}
-      <h3 style="margin-left: 20px; font-weight: 300;">You dont have any favorites yet</h3>
+      <h3 style="margin-left: 20px; font-weight: 300">
+        You dont have any favorites yet
+      </h3>
       {% endif %}
     </main>
   </body>
