@@ -48,7 +48,6 @@ proxied = FlaskBehindProxy(app)  # Enable proxy support
 
 app.config['SECRET_KEY'] = 'd002cde69ced4dfd3544654676af1df8'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-
 db = SQLAlchemy(app)
 
 
@@ -60,10 +59,8 @@ class User(db.Model):
     password = db.Column(db.String(60), nullable=False)
     favorites = db.Column(Text, nullable=False, default="[]")
 
-
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
-
 
 with app.app_context():
     db.create_all()
@@ -94,8 +91,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # Get user's username for header
-        session['username'] = user.username
+        session['username'] = user.username # Store username in session
         return redirect(url_for('main_page'))
 
     return render_template(
@@ -142,13 +138,14 @@ def main_page():
     show_latest = False
     user_query = None
 
+    # Saves user's last search 
     if request.method == "POST":
         user_query = request.form.get("query")
         session['last_query'] = user_query
     elif "page" in request.args and "last_query" in session:
         user_query = session['last_query']
     else:
-        session.pop('last_query', None)
+        session.pop('last_query', None) # When reentering the page, delete last search
 
     # Latest 50 News from User's Search Section
     if user_query:
@@ -252,15 +249,18 @@ def show_article(index):
     if not username:
         session.clear()  
         return redirect(url_for('login'))  
-    # Creates a summary for the selected article
-    url = article['url']
 
+    # Get the summary for the given article (index).
+    # If no summary has been saved yet ("Empty"), generate a new one using Gemini AI
+    # and store it for future use or page refreshing
+    url = article['url']
     if saved_latest_summaries[index] == "Empty":
         response = model.generate_content("Summarize this article (at least 100 words) " + url)
         summary = response.text
         saved_latest_summaries[index] = summary
     else:
         summary = saved_latest_summaries[index]
+
     return render_template(
         "article.html",
         article=article,
@@ -281,9 +281,11 @@ def show_top_article(index):
     if not username:
         session.clear()  
         return redirect(url_for('login'))  
-    # Creates a summary for the selected article
-    url = article['url']
 
+    # Get the summary for the given article (index).
+    # If no summary has been saved yet ("Empty"), generate a new one using Gemini AI
+    # and store it for future use or page refreshing
+    url = article['url']
     if saved_top_summaries[index] == "Empty":
         response = model.generate_content("Summarize this article (at least 200 words):" + url)
         summary = response.text
@@ -302,6 +304,12 @@ def show_top_article(index):
 
 @app.route("/add-favorite", methods=["POST"])
 def add_favorite():
+    username = session.get('username')
+    if not username:
+        session.clear()  
+        return redirect(url_for('login'))  
+
+    # Get article's information
     new_favorite = {
         "title": request.form.get("title"),
         "publishedAt": request.form.get("publishedAt"),
@@ -311,23 +319,17 @@ def add_favorite():
         "urlToImage": request.form.get("urlToImage"),
         "url": request.form.get("url")
     }
-
-    username = session.get('username')
-    if not username:
-        session.clear()  
-        return redirect(url_for('login'))  
     
+    # Check if the article is already in the user's favorites
     user = User.query.filter_by(username=username).first()
-
     favorites = json.loads(user.favorites or "[]")
-
     if any(fav.get("url") == new_favorite["url"] for fav in favorites):
-        return redirect(request.referrer)
+        return redirect(request.referrer) # Go back to the same page without changes
 
-
+    # Go back to the same page adding the new favorite article
+    # in the user's favorites
     favorites.append(new_favorite)
     user.favorites = json.dumps(favorites)
-
     db.session.commit()
 
     return redirect(request.referrer)
@@ -402,7 +404,7 @@ def user_page():
         password_form=password_form
     )
 
-#
+
 @app.route("/update-username", methods=["POST"])
 def update_username():
     username_form = UpdateUsernameForm()
