@@ -402,7 +402,7 @@ def user_page():
         password_form=password_form
     )
 
-
+#
 @app.route("/update-username", methods=["POST"])
 def update_username():
     username_form = UpdateUsernameForm()
