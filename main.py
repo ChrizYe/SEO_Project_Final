@@ -204,8 +204,8 @@ def main_page():
         if article.get('title') and article.get('author') and article.get('publishedAt') and article.get('description')
     ]
 
-    valid_articles = valid_articles[:7]
     # Save the information of each article
+    valid_articles = valid_articles[:7]
     global saved_top_articles
     saved_top_articles = valid_articles
 
@@ -336,6 +336,8 @@ def add_favorite():
 
 @app.route("/remove-favorite", methods=["POST"])
 def remove_favorite():
+
+    # Get unique url
     new_favorite = {
         "url": request.form.get("url")
     }
@@ -345,9 +347,9 @@ def remove_favorite():
         session.clear()  
         return redirect(url_for('login'))  
     
+    # Removes favorite from the user's favorites if it is a favorite
     user = User.query.filter_by(username=username).first()
     favorites = json.loads(user.favorites or "[]")
-
     new_favs = [fav for fav in favorites if fav.get('url') != new_favorite['url']]
     user.favorites = json.dumps(new_favs)
     db.session.commit()
@@ -361,11 +363,13 @@ def user_page():
         session.clear()
         return redirect(url_for('login'))
     
+    # Load forms to update information
     user = User.query.filter_by(username=username).first()
     username_form = UpdateUsernameForm()
     email_form = UpdateEmailForm()
     password_form = ChangePasswordForm()
 
+    # Load user's favorites
     favorites = json.loads(user.favorites or "[]")
     has_favorites = bool(favorites)
 
@@ -382,8 +386,8 @@ def user_page():
             password_form=password_form
         )
 
+    # Organize favorites in a size of 3 per page
     articles = favorites
-
     page = int(request.args.get('page', 1))
     page_size = 3
     total_pages = math.ceil(len(articles) / page_size)
@@ -407,6 +411,8 @@ def user_page():
 
 @app.route("/update-username", methods=["POST"])
 def update_username():
+
+    # Load user's form and information
     username_form = UpdateUsernameForm()
     if username_form.validate_on_submit():
         user = User.query.filter_by(username=session.get('username')).first()
@@ -414,9 +420,11 @@ def update_username():
             session.clear()
             return redirect(url_for('login'))
 
+        # Check for correct password
         if not check_password_hash(user.password, username_form.current_password.data):
             flash("Incorrect password for username update.", "username_password")
         else:
+            # Check for available user
             existing_user = User.query.filter_by(username=username_form.username.data).first()
             if existing_user and existing_user != user:
                 flash("This username is already taken.", "username")
@@ -426,6 +434,7 @@ def update_username():
                 session["username"] = user.username
                 flash("Username updated successfully.", "username_success")
     else:
+        # Add the respective erros
         for field, errors in username_form.errors.items():
             for error in errors:
                 flash(error, "username")
@@ -435,16 +444,19 @@ def update_username():
 
 @app.route("/update-email", methods=["POST"])
 def update_email():
+    # Load email form and user's information
     email_form = UpdateEmailForm()
     if email_form.validate_on_submit():
         user = User.query.filter_by(username=session.get('username')).first()
         if not user:
             session.clear()
             return redirect(url_for('login'))
-
+        
+        # Check for correct password
         if not check_password_hash(user.password, email_form.current_password.data):
             flash("Incorrect password for email update.", "email_password")
         else:
+            # Check for available email address
             existing_email = User.query.filter_by(email=email_form.email.data).first()
             if existing_email and existing_email != user:
                 flash("This email is already taken.", "email")
@@ -453,6 +465,7 @@ def update_email():
                 db.session.commit()
                 flash("Email updated successfully.", "email_success")
     else:
+        # Add the respective erros
         for field, errors in email_form.errors.items():
             for error in errors:
                 flash(error, "email")
@@ -462,6 +475,7 @@ def update_email():
 
 @app.route("/change-password", methods=["POST"])
 def change_password():
+    # Load password form and user's information
     password_form = ChangePasswordForm()
     if password_form.validate_on_submit():
         user = User.query.filter_by(username=session.get('username')).first()
@@ -469,6 +483,7 @@ def change_password():
             session.clear()
             return redirect(url_for('login'))
 
+        # Check for correct password
         if not check_password_hash(user.password, password_form.current_password.data):
             flash("Incorrect current password for password update.", "password_current")
         else:
@@ -476,6 +491,7 @@ def change_password():
             db.session.commit()
             flash("Password changed successfully.", "password_success")
     else:
+        # Add the respective erros
         for field, errors in password_form.errors.items():
             for error in errors:
                 flash(error, "password")
@@ -485,6 +501,7 @@ def change_password():
 
 @app.route("/favorite-article/<int:index>")
 def show_fav_article(index):
+    # Load user's favorite article by index
     username = session.get('username')
     user = User.query.filter_by(username=username).first()
     favorites = json.loads(user.favorites or "[]")
@@ -501,6 +518,7 @@ def show_fav_article(index):
 
 @app.route("/logout")
 def logout():
+    # Clear session and exit page
     session.clear()  
     return redirect(url_for("login"))
 
